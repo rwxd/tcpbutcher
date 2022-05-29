@@ -35,7 +35,7 @@ end note
 
 Client -> Server: RST
 note right
-	Seq = 726, ACK = 1449
+	Seq = 601, ACK = 1449
 end note
 
 @enduml
