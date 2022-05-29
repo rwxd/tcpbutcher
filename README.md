@@ -26,4 +26,4 @@ sudo tcpbutcher -i eno1 --src-port 22
 
 ## How it works
 
-[tcp rst](./docs/client-server.svg)
+![tcp rst](./docs/client-server.svg)
