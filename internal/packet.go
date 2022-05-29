@@ -12,7 +12,7 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-func GetPcapFilters(srcHost string, dstHost string, srcPort int, dstPort int) (filter string) {
+func GetBpfFilter(srcHost string, dstHost string, srcPort int, dstPort int) (filter string) {
 	var bpfFilters []string
 
 	// We need to turn src and dst arround to get ACK packages
@@ -44,8 +44,6 @@ func GetPcapHandleWithFilter(interf *pcap.Interface, filter string) (handle *pca
 }
 
 func ButcherConnections(packetSource *gopacket.PacketSource, handle *pcap.Handle) (err error) {
-	rstPacketsCount := 3
-
 	for packet := range packetSource.Packets() {
 		ethLayer := packet.Layer(layers.LayerTypeEthernet)
 		if ethLayer == nil {
@@ -71,32 +69,46 @@ func ButcherConnections(packetSource *gopacket.PacketSource, handle *pcap.Handle
 		}
 		tcp := tcpLayer.(*layers.TCP)
 
-		if tcp.SYN || tcp.FIN || tcp.RST {
+		if tcp.FIN || tcp.RST {
 			continue
 		}
 
-		for i := 0; i < rstPacketsCount; i++ {
-			// seq := tcp.Ack + uint32(i)*uint32(tcp.Window)
-			seq := tcp.Seq + uint32(i)*uint32(tcp.Window)
+		var seq uint32
+		if tcp.ACK {
+			log.Debug("Found an ACK package")
+			seq = tcp.Ack
+		} else {
+			log.Debug("Found an SYN package, adding packet length to seq number")
+			seq = tcp.Seq + uint32(len(packet.Data()))
+		}
 
-			var rstPacket gopacket.Packet
-			if ipVersion == 4 {
-				ip := ipv4Layer.(*layers.IPv4)
+		var rstPacket gopacket.Packet
+		if ipVersion == 4 {
+			ip := ipv4Layer.(*layers.IPv4)
+			log.Debugf("Packet was from %s:%s to %s:%s", ip.SrcIP, tcp.SrcPort, ip.DstIP, tcp.DstPort)
+
+			if CheckIpLocal(ip.SrcIP.String()) {
 				rstPacket, err = ForgeIPv4RstPacket(eth.SrcMAC, eth.DstMAC, ip.SrcIP, ip.DstIP, tcp.SrcPort, tcp.DstPort, seq)
-				// rstPacket, err = ForgeIPv4RstPacket(eth.DstMAC, eth.SrcMAC, ip.DstIP, ip.SrcIP, tcp.SrcPort, tcp.DstPort, seq)
 			} else {
-				ip := ipv6Layer.(*layers.IPv6)
+				rstPacket, err = ForgeIPv4RstPacket(eth.DstMAC, eth.SrcMAC, ip.DstIP, ip.SrcIP, tcp.DstPort, tcp.SrcPort, seq)
+			}
+		} else {
+			ip := ipv6Layer.(*layers.IPv6)
+			log.Debugf("Packet was from %s:%s to %s:%s", ip.SrcIP, tcp.SrcPort, ip.DstIP, tcp.DstPort)
+
+			if CheckIpLocal(ip.SrcIP.String()) {
 				rstPacket, err = ForgeIPv6RstPacket(eth.SrcMAC, eth.DstMAC, ip.SrcIP, ip.DstIP, tcp.SrcPort, tcp.DstPort, seq)
-				// rstPacket, err = ForgeIPv6RstPacket(eth.DstMAC, eth.SrcMAC, ip.DstIP, ip.SrcIP, tcp.SrcPort, tcp.DstPort, seq)
+			} else {
+				rstPacket, err = ForgeIPv6RstPacket(eth.DstMAC, eth.SrcMAC, ip.DstIP, ip.SrcIP, tcp.DstPort, tcp.SrcPort, seq)
 			}
-			if err != nil {
-				return err
-			}
-			log.Debug("Sending RST packet")
-			err = handle.WritePacketData(rstPacket.Data())
-			if err != nil {
-				return err
-			}
+		}
+		if err != nil {
+			return err
+		}
+		log.Debug("Sending RST packet")
+		err = handle.WritePacketData(rstPacket.Data())
+		if err != nil {
+			return err
 		}
 	}
 	return

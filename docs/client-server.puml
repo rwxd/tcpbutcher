@@ -1,0 +1,41 @@
+@startuml
+title Client sends TCP Reset\n(RST) packet
+
+!theme plain
+
+Client -> Server: SYN
+note right
+	Seq = 0, ACK = 0
+end note
+Client <- Server: SYN-ACK
+
+note right
+	Seq = 0, ACK = 1
+end note
+
+Client -> Server: ACK
+note right
+	Seq = 1, ACK = 1
+end note
+
+Client -> Server: ACK, Len: 600
+note right
+	Seq = 1, ACK = 1
+end note
+
+Client <- Server: ACK
+note right
+	Seq = 1, ACK = 601
+end note
+
+Client <- Server: ACK, Len: 1448
+note right
+	Seq = 1, ACK = 601
+end note
+
+Client -> Server: RST
+note right
+	Seq = 726, ACK = 1449
+end note
+
+@enduml

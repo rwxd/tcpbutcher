@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/google/gopacket/pcap"
+	log "github.com/sirupsen/logrus"
 )
 
 func GetSystemInterfaces() []pcap.Interface {
@@ -33,4 +34,13 @@ func FindSystemInterfaceForIP(ip string) (interf *pcap.Interface, err error) {
 		}
 	}
 	return &pcap.Interface{}, errors.New(fmt.Sprintf("no interface found for address %s", ip))
+}
+
+func CheckIpLocal(ip string) bool {
+	interf, err := FindSystemInterfaceForIP(ip)
+	if err != nil {
+		return false
+	}
+	log.Debugf("Found ip %s on interface %s", ip, interf.Name)
+	return true
 }

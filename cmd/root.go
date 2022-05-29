@@ -22,6 +22,10 @@ var rootCmd = &cobra.Command{
 		dstHost, _ := cmd.Flags().GetString("dst")
 		interf, _ := cmd.Flags().GetString("interface")
 		logLevel, err := utils.GetLogrusLogLevelFromString(cmd.Flag("log-level").Value.String())
+		if err != nil {
+			fmt.Println(err)
+			os.Exit(1)
+		}
 		log.SetLevel(logLevel)
 
 		if !utils.IsRoot() {
@@ -36,7 +40,7 @@ var rootCmd = &cobra.Command{
 				fmt.Println(err)
 				os.Exit(1)
 			}
-			fmt.Printf("System Interface %s found\n", pcapInterface.Name)
+			log.Infof("System Interface %s found\n", pcapInterface.Name)
 		} else if len(interf) == 0 && len(srcHost) > 0 {
 			pcapInterface, err = internal.FindSystemInterfaceForIP(srcHost)
 			if err != nil {
@@ -44,12 +48,20 @@ var rootCmd = &cobra.Command{
 				os.Exit(1)
 			}
 			log.Infof("System Interface %s found for ip %s\n", pcapInterface.Name, srcHost)
+		} else if len(interf) == 0 && len(dstHost) > 0 {
+			pcapInterface, err = internal.FindSystemInterfaceForIP(dstHost)
+			if err != nil {
+				fmt.Println(err)
+				os.Exit(1)
+			}
+			log.Infof("System Interface %s found for ip %s\n", pcapInterface.Name, srcHost)
 		}
 
-		pcapFilters := internal.GetBpfFilter(srcHost, dstHost, srcPort, dstPort)
-		log.Infof("Created bpf filter from cli options with value \"%s\"", pcapFilters)
+		bpfFilter := internal.GetBpfFilter(srcHost, dstHost, srcPort, dstPort)
+		log.Infof("Created bpf filter from cli options with value \"%s\"", bpfFilter)
 
-		handle, err := internal.GetPcapHandleWithFilter(pcapInterface, pcapFilters)
+		fmt.Printf("Creating listener on interface %s\n", pcapInterface.Name)
+		handle, err := internal.GetPcapHandleWithFilter(pcapInterface, bpfFilter)
 		if err != nil {
 			fmt.Println(err)
 			os.Exit(1)
@@ -76,5 +88,6 @@ func init() {
 	rootCmd.Flags().StringP("src", "s", "", "source host")
 	rootCmd.Flags().StringP("dst", "d", "", "destination host")
 	rootCmd.Flags().StringP("interface", "i", "", "interface")
+	rootCmd.Flags().Bool("server", false, "cancel connections to this device")
 	rootCmd.Flags().String("log-level", "error", "log level")
 }
