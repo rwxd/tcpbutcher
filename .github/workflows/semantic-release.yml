@@ -13,7 +13,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - name: install required packages
-        run: apt install -y libpcap-dev
+        run: sudo apt install -y libpcap-dev
 
       - uses: actions/checkout@v3
 
