@@ -53,7 +53,7 @@ jobs:
   goreleaser:
     needs:
       - semantic-release
-    runs-on: ghcr.io/goreleaser/goreleaser-cross:v1.18-v1.9.0
+    container: ghcr.io/goreleaser/goreleaser-cross:v1.18-v1.9.0
     steps:
       - name: Checkout
         uses: actions/checkout@v3
