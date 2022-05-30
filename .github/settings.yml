@@ -1,0 +1,9 @@
+---
+# These settings are synced to GitHub by https://probot.github.io/apps/settings/
+
+_extends: gh-templates:.github/common-settings.yml
+
+repository:
+  name: "tcpbutcher"
+  description: "Kill tcp sessions with ease"
+  topics: "tcpkill, tcp, cli"
