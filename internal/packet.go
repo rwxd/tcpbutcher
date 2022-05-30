@@ -12,10 +12,12 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-func GetBpfFilter(srcHost string, dstHost string, srcPort int, dstPort int) (filter string) {
+func GetBpfFilter(host string, srcHost string, dstHost string, srcPort int, dstPort int) (filter string) {
 	var bpfFilters []string
 
-	// We need to turn src and dst arround to get ACK packages
+	if len(host) > 0 {
+		bpfFilters = append(bpfFilters, "host "+host)
+	}
 	if len(srcHost) > 0 {
 		bpfFilters = append(bpfFilters, "src host "+srcHost)
 	}
@@ -31,6 +33,19 @@ func GetBpfFilter(srcHost string, dstHost string, srcPort int, dstPort int) (fil
 	filter = strings.Join(bpfFilters, " and ")
 	log.Debugf("Created bpf filter \"%s\"", filter)
 	return filter
+}
+
+func CombineBpfFilters(filters ...string) string {
+	var combined string
+
+	for _, filter := range filters {
+		if len(combined) == 0 && len(filter) > 0 {
+			combined += filter
+		} else if len(combined) > 0 && len(filter) > 0 {
+			combined += " and " + filter
+		}
+	}
+	return combined
 }
 
 func GetPcapHandleWithFilter(interf *pcap.Interface, filter string) (handle *pcap.Handle, err error) {
