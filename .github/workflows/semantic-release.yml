@@ -12,8 +12,13 @@ jobs:
         os: [ubuntu-latest, ubuntu-20.04, macos-latest, windows-latest]
     runs-on: ${{ matrix.os }}
     steps:
+      - name: install required packages
+        run: apt install -y libpcap-dev
+
       - uses: actions/checkout@v3
+
       - run: git fetch --prune --unshallow
+
       - uses: actions/cache@v3
         with:
           path: ~/go/pkg/mod
