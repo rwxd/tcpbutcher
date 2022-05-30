@@ -5,5 +5,5 @@ _extends: gh-templates:.github/common-settings.yml
 
 repository:
   name: "tcpbutcher"
-  description: "Tcpkill clone in Go to butcher tcp sessions with ease."
+  description: "Tcpkill clone in Go to butcher TCP sessions with ease."
   topics: "tcpkill, tcp, cli"
