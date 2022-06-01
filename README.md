@@ -4,6 +4,8 @@ A [tcpkill](https://en.wikipedia.org/wiki/Tcpkill) clone in Go with IPv6 support
 
 Still in development.
 
+`libpcap-dev` is needed for the golang libaries.
+
 ## Usage
 
 The [Berkeley Packet Filter syntax](https://www.ibm.com/docs/en/qsip/7.4?topic=queries-berkeley-packet-filters) can be build with cli args or options.  
