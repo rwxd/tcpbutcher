@@ -8,7 +8,7 @@ Still in development.
 
 ## Usage
 
-The [Berkeley Packet Filter syntax](https://www.ibm.com/docs/en/qsip/7.4?topic=queries-berkeley-packet-filters) can be build with cli args or options.  
+The [Berkeley Packet Filters syntax](https://www.ibm.com/docs/en/qsip/7.4?topic=queries-berkeley-packet-filters) can be build with cli args or options.  
 When the interface cannot be found through the ip of `--host`, `--src` or `--dst`,
 then a `-i` or `--interface` option must be passed.
 
