@@ -4,7 +4,7 @@ A [tcpkill](https://en.wikipedia.org/wiki/Tcpkill) clone in Go with IPv6 support
 
 Still in development.
 
-`libpcap-dev` is needed for the golang libaries.
+`libpcap` is needed for the `gopacket` libary.
 
 ## Usage
 
