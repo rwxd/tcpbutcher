@@ -19,8 +19,8 @@ puml-png: ## render plantuml diagrams as png
 	cd docs/
 	find . -name "*.puml" -exec plantuml -tsvg {} \;
 
-pre-commit-all:
+pre-commit-all: ## run pre-commit on all files
 	pre-commit run --all-files
 
-pre-commit:
+pre-commit: ## run pre-commit
 	pre-commit run

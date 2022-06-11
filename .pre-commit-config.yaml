@@ -15,5 +15,5 @@ repos:
   hooks:
     - id: go-fmt
     - id: go-vet
-    - id: go-build
     - id: go-mod-tidy
+    - id: go-build
