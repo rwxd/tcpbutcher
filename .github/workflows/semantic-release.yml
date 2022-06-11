@@ -6,8 +6,6 @@ on:
 
 jobs:
   ci-build:
-    needs:
-      - pre-commit
     strategy:
       matrix:
         go-version:
