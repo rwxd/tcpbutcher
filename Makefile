@@ -8,6 +8,8 @@ help:
 
 setup: ## Setup required things
 	@go get -v -d ./...
+	@python3 -m pip install -r requirements-dev.txt
+	@pre-commit install
 
 puml-svg: ## render plantuml diagrams as svg
 	cd docs/
@@ -16,3 +18,9 @@ puml-svg: ## render plantuml diagrams as svg
 puml-png: ## render plantuml diagrams as png
 	cd docs/
 	find . -name "*.puml" -exec plantuml -tsvg {} \;
+
+pre-commit-all:
+	pre-commit run --all-files
+
+pre-commit:
+	pre-commit run
