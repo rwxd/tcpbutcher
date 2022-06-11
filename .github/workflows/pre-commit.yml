@@ -1,6 +1,6 @@
 ---
 on:
-  push:
+  push: {}
 
 jobs:
   pre-commit:
@@ -12,5 +12,7 @@ jobs:
         run: sudo apt install -y libpcap-dev
       - name: setup
         run: make setup
+      - name: Set skips on ci run
+        run: if ! [ -z "$CI" ] && [[ $GITHUB_REF_PROTECTED =~ "true" ]]; then SKIP="no-commit-to-branch";fi
       - name: run pre-commit
         run: pre-commit run --show-diff-on-failure --all-files
