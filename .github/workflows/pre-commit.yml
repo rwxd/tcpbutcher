@@ -14,7 +14,7 @@ jobs:
         run: make setup
       - name: Set skips on ci run
         run: if [[ $GITHUB_REF_PROTECTED =~ "true" ]]; then SKIP="no-commit-to-branch"; fi
-      - name: Show skips
-        run: echo $SKIP
+      - name: Show env vars
+        run: printenv
       - name: run pre-commit
         run: pre-commit run --show-diff-on-failure --all-files
