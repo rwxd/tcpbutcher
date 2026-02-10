@@ -64,10 +64,10 @@ jobs:
         run: sudo apt install -y libpcap-dev
 
       - name: Set up Go
-        uses: actions/setup-go@v5.0.2
+        uses: actions/setup-go@40f1582b2485089dde7abd97c1529aa768e1baff # v5.6.0
 
       - name: Run GoReleaser
-        uses: goreleaser/goreleaser-action@v3.0.0
+        uses: goreleaser/goreleaser-action@b508e2e3ef3b19d4e4146d4f8fb3ba9db644a757 # v3.2.0
         with:
           distribution: goreleaser
           version: latest
